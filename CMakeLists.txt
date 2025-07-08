@@ -26,6 +26,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build as static libraries" FORCE)
 add_subdirectory(external/SFML)
 add_subdirectory(external/box2d)
 add_subdirectory(external/imgui)
+add_subdirectory(external/spdlog)
 
 # ImGui-SFML setup
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui)
@@ -48,6 +49,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
         external/box2d/include
         ${IMGUI_DIR}
         external/imgui-sfml
+        external/spdlog/include
 )
 
 # Set the C++ standard and link SFML libraries
@@ -61,6 +63,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
         box2d::box2d
         imgui
         ImGui-SFML::ImGui-SFML
+        spdlog::spdlog
 )
 
 # Set RESOURCES_PATH macro based on build type
