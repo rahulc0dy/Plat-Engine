@@ -1,6 +1,41 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include <iostream>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
+#include "imgui-SFML.h"
+#include "imgui.h"
 
 int main() {
-	std::cout << "Hello, World!" << std::endl;
-	return 0;
+
+    sf::RenderWindow window(sf::VideoMode({800, 600}), "Plat Engine", sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize);
+
+    if(ImGui::SFML::Init(window)) {
+        std::cout << "Initialized ImGui-SFML" << std::endl;
+    }
+
+
+
+    while (window.isOpen())
+    {
+        while (const std::optional event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+                window.close();
+        }
+
+        ImGui::SFML::Update(window, sf::seconds(1.0f/60.0f));
+
+        ImGui::Begin("Demo Window");
+        ImGui::Text("This is a demo window.");
+        ImGui::End();
+
+        window.clear();
+
+        ImGui::SFML::Render(window);
+        window.display();
+    }
+
+    ImGui::SFML::Shutdown();
+    return 0;
 }

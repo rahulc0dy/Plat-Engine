@@ -19,6 +19,20 @@ option(PRODUCTION_BUILD "Make this a production build!" OFF)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+# Build Libraries Statically
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build as static libraries" FORCE)
+
+# Add external libraries
+add_subdirectory(external/SFML)
+add_subdirectory(external/box2d)
+add_subdirectory(external/imgui)
+
+# ImGui-SFML setup
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui)
+set(IMGUI_SFML_FIND_SFML OFF)
+set(IMGUI_SFML_IMGUI_DEMO OFF)
+add_subdirectory(external/imgui-sfml)
+
 # Gather source files
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
@@ -30,10 +44,24 @@ add_executable(${CMAKE_PROJECT_NAME}
 # Include directories
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
         include
+        external/SFML/include
+        external/box2d/include
+        ${IMGUI_DIR}
+        external/imgui-sfml
 )
 
 # Set the C++ standard and link SFML libraries
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_20)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+        SFML::Graphics
+        SFML::Window
+        SFML::System
+        SFML::Audio
+        SFML::Network
+        box2d::box2d
+        imgui
+        ImGui-SFML::ImGui-SFML
+)
 
 # Set RESOURCES_PATH macro based on build type
 if (PRODUCTION_BUILD)
