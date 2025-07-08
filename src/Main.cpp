@@ -5,13 +5,16 @@
 
 #include "imgui-SFML.h"
 #include "imgui.h"
+#include "spdlog/spdlog.h"
 
 int main() {
+
+    spdlog::set_level(spdlog::level::LOG_LEVEL);
 
     sf::RenderWindow window(sf::VideoMode({800, 600}), "Plat Engine", sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize);
 
     if(ImGui::SFML::Init(window)) {
-        std::cout << "Initialized ImGui-SFML" << std::endl;
+        spdlog::info("ImGui-SFML initialized");
     }
 
 

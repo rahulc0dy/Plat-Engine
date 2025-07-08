@@ -11,9 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #set this to true to ship the game!
 #basically this will change the RESOURCES_PATH to be the local path
 #! ! ! ! ! ! !
-#DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO RECOGNIZE THIS CHANGE AND REBUILD!
+#DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO
+#RECOGNIZE THIS CHANGE AND REBUILD!
 option(PRODUCTION_BUILD "Make this a production build!" OFF)
-#DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO RECOGNIZE THIS CHANGE AND REBUILD!
+#DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO
+#RECOGNIZE THIS CHANGE AND REBUILD!
 
 # Output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -21,6 +23,22 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Build Libraries Statically
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build as static libraries" FORCE)
+
+# SFML specific static build settings - MUST be set before add_subdirectory
+set(SFML_BUILD_SHARED_LIBS OFF CACHE BOOL "Build SFML as static libraries" FORCE)
+set(SFML_USE_STATIC_STD_LIBS ON CACHE BOOL "Use static standard libraries" FORCE)
+set(SFML_STATIC_LIBRARIES TRUE CACHE BOOL "Link SFML statically" FORCE)
+
+# Box2D static build settings
+set(BOX2D_BUILD_SHARED OFF CACHE BOOL "Build Box2D as static library" FORCE)
+set(BOX2D_BUILD_STATIC ON CACHE BOOL "Build Box2D as static library" FORCE)
+
+# ImGui-SFML static build settings
+set(IMGUI_SFML_FIND_SFML OFF CACHE BOOL "Let ImGui-SFML find SFML" FORCE)
+set(IMGUI_SFML_IMGUI_DEMO OFF CACHE BOOL "Build ImGui demo" FORCE)
+set(IMGUI_SFML_BUILD_EXAMPLES OFF CACHE BOOL "Build ImGui-SFML examples" FORCE)
+set(IMGUI_SFML_LINK_SYSTEM_DEPS OFF CACHE BOOL "Let ImGui-SFML link system deps" FORCE)
+set(IMGUI_SFML_STATIC ON CACHE BOOL "Build ImGui-SFML statically" FORCE)
 
 # Add external libraries
 add_subdirectory(external/SFML)
@@ -54,6 +72,12 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Set the C++ standard and link SFML libraries
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_20)
+# Add static linking definitions
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        SFML_STATIC
+        SPDLOG_COMPILED_LIB
+        IMGUI_SFML_STATIC
+)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
         SFML::Graphics
         SFML::Window
@@ -80,4 +104,30 @@ endif ()
 if (MSVC)
     target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
     add_compile_options(/arch:AVX2)
+    # Use static runtime library for MSVC
+    foreach(flag_var
+            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        if(${flag_var} MATCHES "/MD")
+            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+        endif()
+    endforeach()
+endif ()
+
+# Turn off console and logs in production mode
+if(WIN32 AND PRODUCTION_BUILD)
+    set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+            WIN32_EXECUTABLE TRUE
+            LINK_FLAGS "/SUBSYSTEM:WINDOWS"
+    )
+    # Alternative for MinGW
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,--subsystem,windows")
+    endif()
+endif()
+
+if(PRODUCTION_BUILD)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE LOG_LEVEL=off)
+else ()
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE LOG_LEVEL=info)
 endif ()
