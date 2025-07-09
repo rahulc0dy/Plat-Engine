@@ -40,6 +40,10 @@ set(IMGUI_SFML_BUILD_EXAMPLES OFF CACHE BOOL "Build ImGui-SFML examples" FORCE)
 set(IMGUI_SFML_LINK_SYSTEM_DEPS OFF CACHE BOOL "Let ImGui-SFML link system deps" FORCE)
 set(IMGUI_SFML_STATIC ON CACHE BOOL "Build ImGui-SFML statically" FORCE)
 
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
+endif()
+
 # Add external libraries
 add_subdirectory(external/SFML)
 add_subdirectory(external/box2d)
@@ -102,17 +106,10 @@ endif ()
 
 # MSVC specific options
 if (MSVC)
+    set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
     add_compile_options(/arch:AVX2)
-    # Use static runtime library for MSVC
-    foreach(flag_var
-            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-        if(${flag_var} MATCHES "/MD")
-            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-        endif()
-    endforeach()
-endif ()
+endif()
 
 # Turn off console and logs in production mode
 if(WIN32 AND PRODUCTION_BUILD)
