@@ -43,17 +43,9 @@ jobs:
             c_compiler: cl
 
     steps:
-      # Checkout with proper LFS and submodule initialization
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          lfs: true
-          fetch-depth: 0
-
-      - name: Checkout submodules
-        run: |
-          git submodule update --init --recursive --force
-          git submodule foreach --recursive git reset --hard
+          submodules: recursive
 
       # Install dependencies for Ubuntu
       - name: Install Ubuntu dependencies
