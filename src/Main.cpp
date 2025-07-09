@@ -13,28 +13,25 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Plat Engine", sf::Style::Default);
 
-    if(ImGui::SFML::Init(window)) {
+    if (ImGui::SFML::Init(window)) {
         spdlog::info("ImGui-SFML initialized");
     }
 
     float sliderValue = 0.5f;
 
-    while (window.isOpen())
-    {
-        while (const std::optional event = window.pollEvent())
-        {
+    while (window.isOpen()) {
+        while (const std::optional event = window.pollEvent()) {
             ImGui::SFML::ProcessEvent(window, *event);
 
-            if (event->is<sf::Event::Closed>())
-            {
-                spdlog::info("Window close event received");
+            if (event->is<sf::Event::Closed>()) {
+                spdlog::info("SFML window closed");
                 window.close();
             }
         }
 
-        ImGui::SFML::Update(window, sf::seconds(1.0f/60.0f));
+        ImGui::SFML::Update(window, sf::seconds(1.0f / 60.0f));
 
-        ImGui::Begin("Demo Window", nullptr,  ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Begin("Demo Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("This is a demo window.");
         ImGui::Button("Click Me");
         ImGui::SliderFloat("Slider", &sliderValue, 0.0f, 1.0f);
@@ -46,7 +43,7 @@ int main() {
         ImGui::SFML::Render(window);
         window.display();
     }
-    
+
     ImGui::SFML::Shutdown();
     return 0;
 }
