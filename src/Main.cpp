@@ -27,7 +27,7 @@ int main() {
         spdlog::set_default_logger(file_logger);
         spdlog::set_level(spdlog::level::warn);
     }
-    else {
+    else { 
         spdlog::set_level(spdlog::level::debug);
     }
 
