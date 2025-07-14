@@ -6,10 +6,39 @@
 #include "imgui-SFML.h"
 #include "imgui.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include <filesystem>
+
+#ifdef _WIN32
+#include <Windows.h>
+extern int main();
+int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+    try {
+        return main();
+    } catch (const std::exception& e) {
+        spdlog::critical("Exception: {}", e.what());
+        return EXIT_FAILURE;
+    }
+}
+#endif
 
 int main() {
-    // Set log level with cmake variable at compile time
-    spdlog::set_level(spdlog::level::LOG_LEVEL);
+    if (PRODUCTION_BUILD) {
+        try {
+            if (!std::filesystem::exists("logs")) {
+                std::filesystem::create_directory("logs");
+            }
+            auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/plat_engine.log");
+            spdlog::set_default_logger(file_logger);
+            spdlog::set_level(spdlog::level::warn);
+        } catch (const std::exception& e) {
+            spdlog::error("Failed to create file logger: {}", e.what());
+            spdlog::set_level(spdlog::level::warn);
+        }
+    }
+    else { 
+        spdlog::set_level(spdlog::level::debug);
+    }
 
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Plat Engine", sf::Style::Default);
 
