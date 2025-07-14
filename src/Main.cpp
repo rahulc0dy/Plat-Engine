@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
+#include <filesystem>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -23,9 +24,17 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 int main() {
     if (PRODUCTION_BUILD) {
-        auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/plat_engine.log");
-        spdlog::set_default_logger(file_logger);
-        spdlog::set_level(spdlog::level::warn);
+        try {
+            if (!std::filesystem::exists("logs")) {
+                std::filesystem::create_directory("logs");
+            }
+            auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/plat_engine.log");
+            spdlog::set_default_logger(file_logger);
+            spdlog::set_level(spdlog::level::warn);
+        } catch (const std::exception& e) {
+            spdlog::error("Failed to create file logger: {}", e.what());
+            spdlog::set_level(spdlog::level::warn);
+        }
     }
     else { 
         spdlog::set_level(spdlog::level::debug);

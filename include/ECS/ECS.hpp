@@ -9,15 +9,14 @@
 #include <cstdint>
 #include <string>
 #include <set>
-#include "ECS/Position.hpp"
-#include "ECS/Sprite.hpp"
-#include "ECS/Velocity.hpp"
-#include "ECS/Collider.hpp"
+#include <limits>
 
 using Entity = std::uint32_t;
 
 class ECS {
 public:
+    static constexpr Entity MAX_ENTITIES = std::numeric_limits<Entity>::max();
+    // ECS is the sole authority for entity creation and destruction.
     Entity createEntity(); // Declaration only
     void destroyEntity(Entity entity); // Declaration only
 

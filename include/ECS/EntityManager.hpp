@@ -1,5 +1,4 @@
 #pragma once
-#include <unordered_set>
 #include <cstdint>
 
 using Entity = std::uint32_t;
@@ -7,10 +6,9 @@ using Entity = std::uint32_t;
 class EntityManager {
 public:
     Entity createEntity();
-    void destroyEntity(Entity entity);
     bool isAlive(Entity entity) const;
-
+    // Entity destruction is managed by ECS. This class is deprecated for entity lifecycle.
 private:
     Entity nextEntity = 1;
-    std::unordered_set<Entity> livingEntities;
+    // livingEntities removed; ECS manages entity lifecycle.
 };
