@@ -10,6 +10,7 @@
 #include <string>
 #include <set>
 #include <limits>
+#include "spdlog/spdlog.h"
 
 using Entity = std::uint32_t;
 
@@ -22,6 +23,10 @@ public:
 
     template<typename Component, typename... Args>
     void addComponent(Entity entity, Args&&... args) {
+        if (livingEntities.find(entity) == livingEntities.end()) {
+            spdlog::warn("Attempted to add component to non-existent or destroyed entity: {}", entity);
+            return;
+        }
         auto& compMap = components[typeid(Component)];
         compMap[entity] = Component(std::forward<Args>(args)...);
     }
