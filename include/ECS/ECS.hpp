@@ -11,6 +11,7 @@
 #include <set>
 #include <limits>
 #include "spdlog/spdlog.h"
+#include <stdexcept>
 
 using Entity = std::uint32_t;
 
@@ -24,10 +25,13 @@ public:
     template<typename Component, typename... Args>
     void addComponent(Entity entity, Args&&... args) {
         if (livingEntities.find(entity) == livingEntities.end()) {
-            spdlog::warn("Attempted to add component to non-existent or destroyed entity: {}", entity);
-            return;
+            spdlog::error("Attempted to add component to non-existent or destroyed entity: {}", entity);
+            throw std::runtime_error("Cannot add component to non-existent entity: " + std::to_string(entity));
         }
         auto& compMap = components[typeid(Component)];
+        if (compMap.find(entity) != compMap.end()) {
+            spdlog::warn("Entity {} already has component {}.", entity, typeid(Component).name());
+        }
         compMap[entity] = Component(std::forward<Args>(args)...);
     }
 
@@ -35,7 +39,11 @@ public:
     void removeComponent(Entity entity) {
         auto it = components.find(typeid(Component));
         if (it != components.end()) {
-            it->second.erase(entity);
+            if (it->second.erase(entity) == 0) {
+                spdlog::warn("Attempted to remove non-existent component {} from entity {}.", typeid(Component).name(), entity);
+            }
+        } else {
+            spdlog::warn("Attempted to remove component {} from entity {} but component type not found.", typeid(Component).name(), entity);
         }
     }
 
@@ -47,7 +55,11 @@ public:
             auto compIt = compMap.find(entity);
             if (compIt != compMap.end()) {
                 return std::any_cast<Component>(&compIt->second);
+            } else {
+                spdlog::warn("Entity {} does not have component {}.", entity, typeid(Component).name());
             }
+        } else {
+            spdlog::warn("Component type {} not found for entity {}.", typeid(Component).name(), entity);
         }
         return nullptr;
     }
@@ -63,9 +75,17 @@ public:
 
     // Tag system
     void addTag(Entity entity, const std::string& tag) {
+        if (livingEntities.find(entity) == livingEntities.end()) {
+            spdlog::warn("Attempted to add tag '{}' to non-existent entity {}.", tag, entity);
+            return;
+        }
         tags[entity].insert(tag);
     }
     void removeTag(Entity entity, const std::string& tag) {
+        if (tags.find(entity) == tags.end()) {
+            spdlog::warn("Attempted to remove tag '{}' from non-existent entity {}.", tag, entity);
+            return;
+        }
         tags[entity].erase(tag);
     }
     bool hasTag(Entity entity, const std::string& tag) const {
