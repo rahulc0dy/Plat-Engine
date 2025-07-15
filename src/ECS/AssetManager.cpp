@@ -1,9 +1,10 @@
 #include "ECS/AssetManager.hpp"
 
 std::shared_ptr<sf::Texture> AssetManager::loadTexture(const std::string& name, const std::string& filepath) {
-    if (textures.count(name)) {
+    auto it = textures.find(name);
+    if (it != textures.end()) {
         spdlog::info("Texture '{}' already loaded, returning existing instance.", name);
-        return textures[name];
+        return it->second;
     }
     auto texture = std::make_shared<sf::Texture>();
     if(!texture->loadFromFile(filepath)) {
