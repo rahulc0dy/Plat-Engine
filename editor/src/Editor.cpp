@@ -1,79 +1,52 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include <iostream>
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
+#include "Editor.hpp"
 
-#include "imgui-SFML.h"
-#include "imgui.h"
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include <filesystem>
-
-#ifdef _WIN32
-#include <Windows.h>
-
-extern int main();
-
-int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    try {
-        return main();
-    } catch (const std::exception &e) {
-        spdlog::critical("Exception: {}", e.what());
-        return EXIT_FAILURE;
-    }
-}
-#endif
-
-int main() {
+Editor::Editor()
+    : m_window(sf::VideoMode::getDesktopMode(), "Plat Engine Editor", sf::Style::Default)
+{
     if (PRODUCTION_BUILD) {
         try {
             if (!std::filesystem::exists("logs")) {
                 std::filesystem::create_directory("logs");
             }
-            auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/plat_engine.log");
+            auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/plat_engine_editor.log");
             spdlog::set_default_logger(file_logger);
             spdlog::set_level(spdlog::level::warn);
-        } catch (const std::exception &e) {
+        } catch (const std::exception& e) {
             spdlog::error("Failed to create file logger: {}", e.what());
             spdlog::set_level(spdlog::level::warn);
         }
     } else {
         spdlog::set_level(spdlog::level::debug);
     }
-
-    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Plat Engine", sf::Style::Default);
-
-    if (ImGui::SFML::Init(window)) {
-        spdlog::info("ImGui-SFML initialized");
+    if (ImGui::SFML::Init(m_window)) {
+        spdlog::info("ImGui-SFML initialized in Editor");
     }
+}
 
-    float sliderValue = 0.5f;
+Editor::~Editor() {
+    ImGui::SFML::Shutdown();
+    spdlog::info("ImGui-SFML shutdown in Editor");
+}
 
-    while (window.isOpen()) {
-        while (const std::optional event = window.pollEvent()) {
-            ImGui::SFML::ProcessEvent(window, *event);
+void Editor::run() {
+    while (m_window.isOpen()) {
+        while (const std::optional event = m_window.pollEvent()) {
+            ImGui::SFML::ProcessEvent(m_window, *event);
 
             if (event->is<sf::Event::Closed>()) {
-                spdlog::info("SFML window closed");
-                window.close();
+                spdlog::info("SFML window closed in Editor");
+                m_window.close();
             }
         }
 
-        ImGui::SFML::Update(window, sf::seconds(1.0f / 60.0f));
-
-        ImGui::Begin("Demo Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Text("This is a demo window.");
+        ImGui::SFML::Update(m_window, sf::seconds(1.0f / 60.0f));
+        ImGui::Begin("Editor Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Text("This is the Plat Engine Editor.");
         ImGui::Button("Click Me");
-        ImGui::SliderFloat("Slider", &sliderValue, 0.0f, 1.0f);
-        ImGui::Text("Slider Value: %.2f", sliderValue);
         ImGui::End();
 
-        window.clear();
-
-        ImGui::SFML::Render(window);
-        window.display();
+        m_window.clear();
+        ImGui::SFML::Render(m_window);
+        m_window.display();
     }
-
-    ImGui::SFML::Shutdown();
-    return 0;
 }
