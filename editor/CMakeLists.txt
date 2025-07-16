@@ -36,6 +36,8 @@ target_link_libraries(PlatEditor PRIVATE
         imgui
         ImGui-SFML::ImGui-SFML
         spdlog::spdlog
+
+        PlatEngine
 )
 
 # Set the C++ standard and link SFML libraries
