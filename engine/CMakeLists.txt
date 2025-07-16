@@ -26,7 +26,7 @@ target_include_directories(PlatEngine PUBLIC
 )
 
 # Link dependencies
-target_link_libraries(PlatEngine PRIVATE
+target_link_libraries(PlatEngine PUBLIC
         SFML::Graphics
         SFML::Window
         SFML::System
@@ -62,16 +62,4 @@ if (MSVC)
     set_property(TARGET PlatEngine PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     target_compile_definitions(PlatEngine PUBLIC _CRT_SECURE_NO_WARNINGS)
     add_compile_options(/arch:AVX2)
-endif()
-
-# Turn off console and logs in production mode
-if(WIN32 AND PRODUCTION_BUILD)
-    set_target_properties(PlatEngine PROPERTIES
-            WIN32_EXECUTABLE TRUE
-            LINK_FLAGS "/SUBSYSTEM:WINDOWS"
-    )
-    # Alternative for MinGW
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        target_link_options(PlatEngine PRIVATE "-Wl,--subsystem,windows")
-    endif()
 endif()

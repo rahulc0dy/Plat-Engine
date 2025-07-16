@@ -26,19 +26,7 @@ target_include_directories(PlatEditor PUBLIC
 )
 
 # Link dependencies
-target_link_libraries(PlatEditor PRIVATE
-        SFML::Graphics
-        SFML::Window
-        SFML::System
-        SFML::Audio
-        SFML::Network
-        box2d::box2d
-        imgui
-        ImGui-SFML::ImGui-SFML
-        spdlog::spdlog
-
-        PlatEngine
-)
+target_link_libraries(PlatEditor PRIVATE PlatEngine)
 
 # Set the C++ standard and link SFML libraries
 target_compile_features(PlatEditor PRIVATE cxx_std_20)
