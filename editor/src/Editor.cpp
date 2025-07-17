@@ -34,6 +34,8 @@ Editor::~Editor() {
 
 void Editor::run() {
     while (m_window.isOpen()) {
+        sf::Clock deltaClock;
+
         while (const std::optional event = m_window.pollEvent()) {
             ImGui::SFML::ProcessEvent(m_window, *event);
 
@@ -43,7 +45,7 @@ void Editor::run() {
             }
         }
 
-        ImGui::SFML::Update(m_window, sf::seconds(1.0f / 60.0f));
+        ImGui::SFML::Update(m_window, deltaClock.restart());
         ImGui::Begin("Editor Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("This is the Plat Engine Editor.");
         ImGui::Button("Click Me");
