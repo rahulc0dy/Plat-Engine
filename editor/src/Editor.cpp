@@ -21,6 +21,10 @@ Editor::Editor()
     if (ImGui::SFML::Init(m_window)) {
         spdlog::info("ImGui-SFML initialized in Editor");
     }
+    else {
+        spdlog::error("Failed to initialize ImGui-SFML");
+        throw std::runtime_error("ImGui-SFML initialization failed");
+    }
 }
 
 Editor::~Editor() {
