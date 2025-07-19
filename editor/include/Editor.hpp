@@ -12,6 +12,7 @@
 #include "ECS/PhysicsBody.hpp"
 #include "ECS/Script.hpp"
 #include "ECS/Velocity.hpp"
+#include "ECS/Name.hpp"
 
 class Editor {
 public:

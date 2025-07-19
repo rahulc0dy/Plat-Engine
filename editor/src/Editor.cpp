@@ -81,6 +81,17 @@ void Editor::drawMenuBar() {
             }
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Edit")) {
+            if (ImGui::MenuItem("Undo")) {
+                // Implement undo logic
+                spdlog::info("Undo clicked in Editor");
+            }
+            if (ImGui::MenuItem("Redo")) {
+                // Implement redo logic
+                spdlog::info("Redo clicked in Editor");
+            }
+            ImGui::EndMenu();
+        }
         ImGui::EndMainMenuBar();
     }
 }
@@ -92,6 +103,9 @@ void Editor::drawEntityList() {
     // Use only the member variable for selection
     for (Entity e : ecs.getEntitiesWith<>()) {
         std::string label = "Entity " + std::to_string(e);
+        if(ecs.getComponent<Name>(e)) {
+            label = ecs.getComponent<Name>(e)->value;
+        }
         if (ImGui::Selectable(label.c_str(), selectedEntity == e)) {
             selectedEntity = e;
         }
@@ -99,8 +113,10 @@ void Editor::drawEntityList() {
 
     if(ImGui::Button("Create Entity")) {
         Entity newEntity = ecs.createEntity();
+        ecs.addComponent<Transform>(newEntity, sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f), 0.f);
+        ecs.addComponent<Name>(newEntity, "Entity " + std::to_string(newEntity));
         m_scene.addEntity(newEntity);
-        selectedEntity = newEntity; // Select the new entity
+        selectedEntity = newEntity;
         spdlog::info("Created new entity: {}", newEntity);
     }
 
@@ -112,9 +128,21 @@ void Editor::drawInspector() {
     auto& ecs = m_scene.getECS();
 
     if (selectedEntity != Scene::INVALID_ENTITY) {
-        ImGui::Text("Entity: %u", selectedEntity);
+        ImGui::Text("Entity ID: %u", selectedEntity);
 
-        // Edit Transform component
+        // Name editing
+        if (auto* name = ecs.getComponent<Name>(selectedEntity)) {
+            char buffer[128];
+            std::strncpy(buffer, name->value.c_str(), sizeof(buffer));
+            buffer[sizeof(buffer) - 1] = 0;
+            if (ImGui::InputText("Name", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                name->value = buffer[0] ? buffer : "Un-named Entity";
+            }
+        }
+        else {
+            ImGui::Text("Name: (none)");
+        }
+
         if (auto* transform = ecs.getComponent<Transform>(selectedEntity)) {
             float pos[2] = { transform->position.x, transform->position.y };
             if (ImGui::InputFloat2("Position", pos)) {
@@ -142,7 +170,7 @@ void Editor::drawInspector() {
         if (ImGui::Button("Delete Entity")) {
             ecs.destroyEntity(selectedEntity);
             spdlog::info("Deleted entity: {}", selectedEntity);
-            selectedEntity = Scene::INVALID_ENTITY; // Deselect after deletion
+            selectedEntity = Scene::INVALID_ENTITY;
         }
     }
     else {
@@ -188,7 +216,6 @@ void Editor::drawGridSettings() {
 
     ImGui::End();
 }
-
 
 void Editor::drawScenesWidget() {
     ImGui::Begin("Scenes", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
