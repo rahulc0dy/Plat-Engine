@@ -1,6 +1,20 @@
 #include <imgui.h>
 
 #include "Editor.hpp"
+#include "ECS/Scene.hpp"
+#include "ECS/Transform.hpp"
+#include "ECS/Animation.hpp"
+#include "ECS/AssetManager.hpp"
+#include "ECS/Audio.hpp"
+#include "ECS/Camera.hpp"
+#include "ECS/Collider.hpp"
+#include "ECS/Event.hpp"
+#include "ECS/Input.hpp"
+#include "ECS/Sprite.hpp"
+#include "ECS/PhysicsBody.hpp"
+#include "ECS/Script.hpp"
+#include "ECS/Velocity.hpp"
+#include "ECS/Name.hpp"
 
 Editor::Editor()
     : m_window(sf::VideoMode::getDesktopMode(), "Plat Engine Editor", sf::Style::Default)
@@ -38,7 +52,7 @@ Editor::~Editor() {
 void Editor::run() {
     while (m_window.isOpen()) {
         sf::Clock deltaClock;
-        int dt = static_cast<int>(deltaClock.getElapsedTime().asSeconds());
+        float dt = deltaClock.getElapsedTime().asSeconds();
 
         while (const std::optional event = m_window.pollEvent()) {
             ImGui::SFML::ProcessEvent(m_window, *event);
@@ -50,12 +64,14 @@ void Editor::run() {
         }
 
         ImGui::SFML::Update(m_window, deltaClock.restart());
+        m_scene.update(dt);
 
         drawMenuBar();
         drawEntityList();
         drawInspector();
         drawToolbar();
         drawGridSettings();
+        drawScenesWidget();
 
         m_window.clear();
         m_scene.render(m_window);
@@ -204,15 +220,8 @@ void Editor::drawToolbar() {
 void Editor::drawGridSettings() {
     ImGui::Begin("Grid Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-    static bool gridEnabled = true;
-    static float gridSize = 32.0f;
-
-    ImGui::Checkbox("Enable Grid", &gridEnabled);
-    ImGui::InputFloat("Grid Size", &gridSize);
-
-    // Store grid settings in editor state if needed
-    this->m_gridEnabled = gridEnabled;
-    this->m_gridSize = gridSize;
+    ImGui::Checkbox("Enable Grid", &m_gridEnabled);
+    ImGui::InputFloat("Grid Size", &m_gridSize);
 
     ImGui::End();
 }

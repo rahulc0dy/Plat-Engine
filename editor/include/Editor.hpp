@@ -1,18 +1,5 @@
 #include "Engine.hpp"
 #include "ECS/Scene.hpp"
-#include "ECS/Transform.hpp"
-#include "ECS/Animation.hpp"
-#include "ECS/AssetManager.hpp"
-#include "ECS/Audio.hpp"
-#include "ECS/Camera.hpp"
-#include "ECS/Collider.hpp"
-#include "ECS/Event.hpp"
-#include "ECS/Input.hpp"
-#include "ECS/Sprite.hpp"
-#include "ECS/PhysicsBody.hpp"
-#include "ECS/Script.hpp"
-#include "ECS/Velocity.hpp"
-#include "ECS/Name.hpp"
 
 class Editor {
 public:
