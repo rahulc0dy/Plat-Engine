@@ -18,33 +18,6 @@ add_library(PlatEngine STATIC
 # Include directories
 target_include_directories(PlatEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/external/SFML/include
-    ${CMAKE_SOURCE_DIR}/external/box2d/include
-    ${CMAKE_SOURCE_DIR}/external/imgui
-    ${CMAKE_SOURCE_DIR}/external/imgui-sfml
-    ${CMAKE_SOURCE_DIR}/external/spdlog/include
-)
-
-# Link dependencies
-target_link_libraries(PlatEngine PUBLIC
-        SFML::Graphics
-        SFML::Window
-        SFML::System
-        SFML::Audio
-        SFML::Network
-        box2d::box2d
-        imgui
-        ImGui-SFML::ImGui-SFML
-        spdlog::spdlog
-)
-
-# Set the C++ standard and link SFML libraries
-target_compile_features(PlatEngine PRIVATE cxx_std_20)
-# Add static linking definitions
-target_compile_definitions(PlatEngine PRIVATE
-        SFML_STATIC
-        SPDLOG_COMPILED_LIB
-        IMGUI_SFML_STATIC
 )
 
 # Set RESOURCES_PATH macro based on build type
