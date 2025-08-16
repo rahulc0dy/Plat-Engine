@@ -28,5 +28,9 @@ if (MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
 endif ()
 
+# External libraries
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/spdlog)
+
 add_subdirectory(engine)
 add_subdirectory(game)
