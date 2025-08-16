@@ -13,8 +13,6 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/
 # Set the Executable target
 add_library(${PROJECT_NAME} STATIC
         ${ENGINE_SRC}
-        src/logger/Logger.h
-        src/logger/LoggerFactory.h
 )
 
 # Include directories
