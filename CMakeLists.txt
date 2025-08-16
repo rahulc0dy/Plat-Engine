@@ -20,6 +20,7 @@ option(PRODUCTION_BUILD "Make this a production build!" OFF)
 # Output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Build Libraries Statically
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build as static libraries" FORCE)
@@ -29,8 +30,8 @@ if (MSVC)
 endif ()
 
 # External libraries
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/spdlog)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/spdlog EXCLUDE_FROM_ALL)
 
 add_subdirectory(engine)
 add_subdirectory(game)
