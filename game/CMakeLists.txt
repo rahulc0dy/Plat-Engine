@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.31)
 
-# Set the project name and version
-project(PlatEngine)
+# Set the project name
+project(DemoGame)
 
 # Set the C++ standard to C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Gather source files
-file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE GAME_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 # Set the Executable target
-add_library(${PROJECT_NAME} STATIC
-        ${ENGINE_SRC}
+add_executable(${PROJECT_NAME}
+        ${GAME_SRC}
 )
 
 # Include directories
@@ -20,13 +20,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# SFML
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/SDL/include)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
-
-# Spdlog
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/spdlog/include)
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+# Link the engine
+target_link_libraries(${PROJECT_NAME} PRIVATE PlatEngine)
 
 # Set RESOURCES_PATH macro based on build type
 if (PRODUCTION_BUILD)
