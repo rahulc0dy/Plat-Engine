@@ -21,12 +21,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 # SFML
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/external/SDL/include)
-target_link_libraries(${PROJECT_NAME} PUBLIC SDL3::SDL3)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/SDL/include)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
 
 # Spdlog
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/external/spdlog/include)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/spdlog/include)
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 
 # Set RESOURCES_PATH macro based on build type
 if (PRODUCTION_BUILD)
