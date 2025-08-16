@@ -29,7 +29,7 @@ if (MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
 endif ()
 
-include(fetchcontent)
+include(FetchContent)
 
 # SDL 3
 fetchcontent_declare(
