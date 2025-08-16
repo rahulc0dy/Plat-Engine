@@ -1,18 +1,11 @@
-#include <memory>
-
-#include "logger/SpdlogLogger.hpp"
+#include "spdlog/spdlog.h"
 
 int main() {
-    using namespace PlatLogger;
-
-    // Game/engine only knows about Logger interface
-    std::unique_ptr<Logger> logger = std::make_unique<SpdLogger>("Game");
-
-    logger->info("Game started!");
-    logger->debug("Loading assets...");
-    logger->warn("Low memory warning");
-    logger->error("Failed to load texture");
-    logger->critical("Fatal error, shutting down!");
-
+    spdlog::set_level(spdlog::level::trace);
+    spdlog::warn("This is ultimate {}", "Logging");
+    spdlog::error("This is ultimate {}", "Logging");
+    spdlog::info("This is ultimate {}", "Logging");
+    spdlog::debug("This is ultimate {}", "Logging");
+    spdlog::critical("This is ultimate {}", "Logging");
     return 0;
 }
