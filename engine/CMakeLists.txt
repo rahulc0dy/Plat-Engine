@@ -16,17 +16,35 @@ add_library(${PROJECT_NAME} STATIC
 )
 
 # Include directories
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# SFML
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/SDL/include)
+include(FetchContent)
+
+# SDL 3
+fetchcontent_declare(
+        SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG release-3.2.20
+        GIT_SHALLOW TRUE
+)
+
+fetchcontent_makeavailable(SDL3)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
 
 # Spdlog
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/spdlog/include)
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+fetchcontent_declare(
+        spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG v1.15.3
+        GIT_SHALLOW TRUE
+)
+
+fetchcontent_makeavailable(spdlog)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 
 # Set RESOURCES_PATH macro based on build type
 if (PRODUCTION_BUILD)
